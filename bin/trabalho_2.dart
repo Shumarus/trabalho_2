@@ -1,15 +1,20 @@
 import 'dart:io';
 
 void main() {
-  print('Digite o valor inicial da faixa (a): ');
-  String? inputA = stdin.readLineSync();
+  String? linha = stdin.readLineSync();
+  int? a;
+  int? b;
 
-  print('Digite o valor final da faixa (b): ');
-  String? inputB = stdin.readLineSync();
-
-  // Validação de entrada estruturada para evitar falhas de tipagem
-  int? a = int.tryParse(inputA ?? '');
-  int? b = int.tryParse(inputB ?? '');
+  if (linha != null) {
+    // Separa a linha por espaços (suporta mais de um espaço entre os números)
+    List<String> partes = linha.trim().split(RegExp(r'\s+'));
+    
+    if (partes.length >= 2) {
+      // Tenta converter as duas primeiras partes para inteiros
+      a = int.tryParse(partes[0]);
+      b = int.tryParse(partes[1]);
+    }
+  }
 
   if (a == null || b == null) {
     print('Erro: Por favor, insira números inteiros válidos.');
@@ -48,26 +53,24 @@ void main() {
     }
   }
 
-  print('\n--- Resultados na faixa [$start, $end] ---');
 
   // Saída: Números Perfeitos
   if (numerosPerfeitos.isEmpty) {
-    print('Não foram encontrados números perfeitos na faixa.');
+    print('Nenhum número perfeito encontrado na faixa entre $start e $end.');
   } else {
-    print('\nNúmeros Perfeitos:');
     for (var perfeito in numerosPerfeitos) {
-      print('- Número: ${perfeito['numero']} | Fatores: ${perfeito['fatores']}');
+      print('${perfeito['numero']} é um número perfeito.');
+      print('Fatores: ${perfeito['fatores']}');
     }
   }
 
   // Saída: Número Abundante
   if (numeroAbundanteMaximo == null) {
-    print('\nNão foram encontrados números abundantes na faixa.');
+    print('Nenhum número abundante encontrado na faixa entre $start e $end.');
   } else {
-    print('\nNúmero Abundante com maior soma de fatores:');
-    print('- Número: $numeroAbundanteMaximo');
-    print('- Soma dos fatores: $somaMaximaFatores');
-    print('- Lista de fatores: $fatoresAbundanteMaximo');
+    print('Maior número abundante: $numeroAbundanteMaximo');
+    print('Fatores: $fatoresAbundanteMaximo');
+    print('Soma dos fatores: $somaMaximaFatores');
   }
 }
 
