@@ -1,83 +1,85 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'dart:io';
 
 void main() {
-  String? linha = stdin.readLineSync();
+  String? input = stdin.readLineSync();
   int? a;
   int? b;
 
-  if (linha != null) {
-    // Separa a linha por espaços (suporta mais de um espaço entre os números)
-    List<String> partes = linha.trim().split(RegExp(r'\s+'));
+  if (input != null) {
+    List<String> partes = input.trim().split(RegExp(r'\s+'));
     
     if (partes.length >= 2) {
-      // Tenta converter as duas primeiras partes para inteiros
       a = int.tryParse(partes[0]);
       b = int.tryParse(partes[1]);
     }
   }
 
   if (a == null || b == null) {
-    print('Erro: Por favor, insira números inteiros válidos.');
+    print('Por favor forneça dois números inteiros positivos.');
     return;
   }
 
-  // Ordenação automática caso o usuário insira os valores invertidos
+  if (a < 0 || b < 0) {
+    print('Por favor forneça dois números inteiros positivos.');
+    return;
+  }
+
+  if(a > b) {
+    print('O primeiro número deve ser menor ou igual ao segundo.');
+    return;
+  }
+
   int start = a < b ? a : b;
   int end = a > b ? a : b;
 
-  List<Map<String, dynamic>> numerosPerfeitos = [];
-  int? numeroAbundanteMaximo;
-  int somaMaximaFatores = 0;
-  List<int> fatoresAbundanteMaximo = [];
+  List<Map<String, dynamic>> numPerfeitos = [];
+  int? numAbundante;
+  int somaFatores = 0;
+  List<int> fatAbundantes = [];
 
   for (int i = start; i <= end; i++) {
-    if (i < 2) continue; // 0 e 1 não possuem divisores próprios que satisfaçam as regras
+    if (i < 2) continue; 
 
-    List<int> divisores = obterDivisoresProprios(i);
-    int somaDivisores = divisores.fold(0, (prev, atual) => prev + atual);
+    List<int> div = divProprios(i);
+    int somaDivisores = div.fold(0, (prev, atual) => prev + atual);
 
-    // Validação de Número Perfeito
     if (somaDivisores == i) {
-      numerosPerfeitos.add({
+      numPerfeitos.add({
         'numero': i,
-        'fatores': divisores,
+        'fatores': div,
       });
     }
-    // Validação de Número Abundante 
     else if (somaDivisores > i) {
-      if (somaDivisores > somaMaximaFatores) {
-        somaMaximaFatores = somaDivisores;
-        numeroAbundanteMaximo = i;
-        fatoresAbundanteMaximo = divisores;
+      if (somaDivisores > somaFatores) {
+        somaFatores = somaDivisores;
+        numAbundante = i;
+        fatAbundantes = div;
       }
     }
   }
 
-
-  // Saída: Números Perfeitos
-  if (numerosPerfeitos.isEmpty) {
+  if (numPerfeitos.isEmpty) {
     print('Nenhum número perfeito encontrado na faixa entre $start e $end.');
   } else {
-    for (var perfeito in numerosPerfeitos) {
+    for (var perfeito in numPerfeitos) {
       print('${perfeito['numero']} é um número perfeito.');
       print('Fatores: ${perfeito['fatores']}');
     }
   }
 
-  // Saída: Número Abundante
-  if (numeroAbundanteMaximo == null) {
+  if (numAbundante == null) {
     print('Nenhum número abundante encontrado na faixa entre $start e $end.');
   } else {
-    print('Maior número abundante: $numeroAbundanteMaximo');
-    print('Fatores: $fatoresAbundanteMaximo');
-    print('Soma dos fatores: $somaMaximaFatores');
+    print('Maior número abundante: $numAbundante');
+    print('Fatores: $fatAbundantes');
+    print('Soma dos fatores: $somaFatores');
   }
 }
 
-// Retorna uma List de divisores próprios (excluindo o próprio número)
-List<int> obterDivisoresProprios(int n) {
+List<int> divProprios(int n) {
   List<int> divisores = [];
-  // Otimização: o maior divisor próprio possível é a metade exata do número
   for (int i = 1; i <= n ~/ 2; i++) {
     if (n % i == 0) {
       divisores.add(i);
